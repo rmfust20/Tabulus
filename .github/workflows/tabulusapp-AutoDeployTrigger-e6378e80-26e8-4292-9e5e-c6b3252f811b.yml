@@ -35,8 +35,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
+          _dockerfilePathKey_: Dockerfile
           registryUrl: tabulusacr.azurecr.io
           registryUsername: ${{ secrets.TABULUSAPP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.TABULUSAPP_REGISTRY_PASSWORD }}
@@ -45,5 +44,6 @@ jobs:
           imageToBuild: tabulusacr.azurecr.io/tabulusapp:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
 
 
