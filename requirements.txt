@@ -1,0 +1,14 @@
+fastapi
+fastapi-cli
+fastapi-cloud-cli
+gunicorn
+Levenshtein
+psycopg2-binary
+pydantic
+pydantic_core
+python-dotenv
+requests
+SQLAlchemy
+sqlmodel
+uvicorn
+xmltodict
