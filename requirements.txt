@@ -3,6 +3,7 @@ fastapi-cli
 fastapi-cloud-cli
 gunicorn
 Levenshtein
+passlib
 psycopg2-binary
 pydantic
 pydantic_core

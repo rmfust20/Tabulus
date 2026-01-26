@@ -3,8 +3,9 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from app.connection import SessionDep
 from fastapi import APIRouter
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from app.models import Review
+from app.models import Review, UserBoardGame
 from app.services import getBoardGameByName, reviewsService
+from app.services.userService import get_current_user
 
 
 router = APIRouter(
@@ -20,7 +21,11 @@ def read_reviews_by_board_game_name(board_game_id, session: SessionDep):     #co
     return reviews
 
 @router.post("/postReview", response_model=Review)
-def create_review_for_board_game(review: Review, session: SessionDep): 
+def create_review_for_board_game(review: Review, session: SessionDep, 
+                                 user: UserBoardGame = Depends(get_current_user)): 
+    #do need to ensure that the userID is the same as the authenticated user
+    if review.user_id != user.id:
+        raise HTTPException(403, "Cannot create review for another user")
     return reviewsService.insert_review_for_board_game(review, session)
 
 

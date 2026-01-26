@@ -12,10 +12,10 @@ class UserBoardGamePublic(UserBoardGameBase):
     id: int
 
 class UserBoardGameCreate(UserBoardGameBase):
-    password_hash : str
+    password : str
 
 class UserBoardGameUpdate(UserBoardGameBase):
     username: str | None = None
     email: str | None = None
-    password_hash: str | None = None
+    password: str | None = None
 
