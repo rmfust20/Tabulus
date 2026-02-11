@@ -2,7 +2,8 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from app.connection import engine
-from app.models import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate, GameNight
+import app.models
+from app.models import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate, GameNight, GameSession
 from app.routes import boardGameAPI
 from app.routes import reviewsAPI
 from app.routes import userAPI

@@ -5,20 +5,25 @@ from fastapi import APIRouter
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 from app.models import BoardGame
 from app.models.boardGame import BoardGameFeedItem
-from app.models.gameNight import GameNight
+from app.models.gameNight import GameNight, GameNightPublic
 from app.services import getBoardGameByName, reviewsService, feedService
 from app.models import BoardGameDesigner
 from app.models import BoardGameDesignerLink
 from app.services import get_game_night_feed
+from app.services.gameNightService import add_game_night
 
 
 router = APIRouter(
     prefix="/gameNights",
     )
 
-@router.get("/feed{user_id}", response_model=list[GameNight])
+@router.get("/feed/{user_id}", response_model=GameNight)
 def get_game_nights(user_id: int, session:SessionDep, offset: int = 0):
-    get_game_night_feed(user_id=user_id, offset=offset, session=session)
+    feed = get_game_night_feed(user_id=user_id, offset=offset, session=session)
+    return feed
     
-
     
+@router.post("/postNight")
+def post_game_night(game_night_public: GameNightPublic, session: SessionDep):
+    add_game_night(payload=game_night_public, session=session)
+    return {"message": "Game night added successfully"}

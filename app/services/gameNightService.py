@@ -9,7 +9,7 @@ from app.models.gameNightUserLink import GameNightUserLink
 from app.models.gameSession import GameSession, GameSessionImage
 from app.models.gameSessionUserLink import GameSessionUserLink
 
-def get_game_night_feed(user_id: int, offset: int, session: SessionDep):
+def get_game_night_feed(user_id: int, offset: int, session: SessionDep) -> GameNight:
     stmt = (
         select(GameNight)
         .join(GameNightUserLink, GameNight.id == GameNightUserLink.game_night_id)
@@ -24,16 +24,16 @@ def get_game_night_feed(user_id: int, offset: int, session: SessionDep):
     )
 
     nights = session.exec(stmt).unique().all()
+    print(nights[0].sessions[0].images)  # Debug print to verify sessions and images are loaded
 
-    for night in nights:
-        print(night)
+    return nights[0]
 
 
 def add_game_night(payload: GameNightPublic, session: SessionDep):
     # 1) Create the night
+    print("got here")
     game_night_db = GameNight(
         host_user_id=payload.host_user_id,
-        host_username=payload.host_username,
         date=payload.date,
         description=payload.description
     )
@@ -43,6 +43,8 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
     # 2) Night images
     for url in payload.images:
         session.add(GameNightImage(game_night_id=game_night_db.id, image_url=url))
+    for users in payload.user_ids:
+        session.add(GameNightUserLink(game_night_id=game_night_db.id, user_id=users))
 
     # 3) Sessions + their images
     for s in payload.sessions:
@@ -50,8 +52,7 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
             game_night_id=game_night_db.id,
             board_game_id=s.board_game_id,
             duration_minutes=s.duration_minutes,
-            winner_user_id=s.winner_user_id,   # whatever your field name is
-            description=s.description
+            winner_user_id=s.winner_user_id
         )
         session.add(game_session_db)
         session.flush()  # assigns game_session_db.id (needed for session images)
@@ -61,7 +62,7 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
             session.add(GameSessionImage(game_session_id=game_session_db.id, image_url=url))
 
         for user in s.users:
-            session.add(GameSessionUserLink(game_session_id=game_session_db.id, user_id=user.user_id, username=user.username))
+            session.add(GameSessionUserLink(game_session_id=game_session_db.id, user_id=user))
 
     session.commit()
     session.refresh(game_night_db)

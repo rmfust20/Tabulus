@@ -1,32 +1,22 @@
-from __future__ import annotations
-
 from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from app.models.gameSession import GameSession, GameSessionPublic
-
-
+    # This only runs during static analysis (IDE/Mypy), not at runtime
+    from app.models.gameSession import GameSession
 
 class GameNight(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     host_user_id: int = Field(foreign_key="userboardgame.id", index=True)
-    host_username: str = Field(index=True)
 
     date: Optional[str] = None
     description: Optional[str] = None
 
     # IMPORTANT: default_factory=list
-    sessions: List["GameSession"] = Relationship(
-        back_populates="game_night",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
-    )
+    sessions: list["GameSession"] = Relationship(back_populates="game_night")
 
-    images: List["GameNightImage"] = Relationship(
-        back_populates="game_night",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
-    )
+    images: list["GameNightImage"] = Relationship(back_populates="game_night")
 
 class GameNightImage(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -34,16 +24,21 @@ class GameNightImage(SQLModel, table=True):
     game_night_id: int = Field(foreign_key="gamenight.id", index=True)
     image_url: Optional[str] = None
 
-    game_night: Optional["GameNight"] = Relationship(back_populates="images")
+    game_night: GameNight = Relationship(back_populates="images")
     
     #has images and sessions linked to it
 
 class GameNightPublic(SQLModel):
-    id: int
     host_user_id: int
-    host_username: str
     date: Optional[str] = None
     description: Optional[str] = None
-    sessions: Optional[List[GameSessionPublic]] = []
+    sessions: List[GameSessionHelper] = []
     images: List[str] = []
     user_ids: List[int] = []
+
+class GameSessionHelper(SQLModel):
+    board_game_id: int
+    duration_minutes: int | None = None
+    winner_user_id: int | None = None
+    images: list[str] | None = None
+    users: list[int] | None = None
