@@ -28,6 +28,13 @@ class GameNightImage(SQLModel, table=True):
     
     #has images and sessions linked to it
 
+class GameSessionHelper(SQLModel):
+    board_game_id: int
+    duration_minutes: int | None = None
+    winner_user_id: int | None = None
+    images: list[str] | None = None
+    users: list[int] | None = None
+
 class GameNightPublic(SQLModel):
     host_user_id: int
     date: Optional[str] = None
@@ -35,10 +42,3 @@ class GameNightPublic(SQLModel):
     sessions: List[GameSessionHelper] = []
     images: List[str] = []
     user_ids: List[int] = []
-
-class GameSessionHelper(SQLModel):
-    board_game_id: int
-    duration_minutes: int | None = None
-    winner_user_id: int | None = None
-    images: list[str] | None = None
-    users: list[int] | None = None
