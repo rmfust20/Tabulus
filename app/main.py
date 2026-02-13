@@ -26,7 +26,7 @@ app.include_router(reviewsAPI.router)
 app.include_router(userAPI.router)
 app.include_router(gameNightAPI.router)
 app.include_router(imagesAPI.router)
-
+#trigger deploy
 
 @app.on_event("startup")
 def on_startup():
