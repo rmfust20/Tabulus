@@ -89,3 +89,4 @@ def logout(refresh_token: str, session: SessionDep):
         session.add(rt)
         session.commit()
     return {"ok": True}
+

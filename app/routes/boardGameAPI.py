@@ -14,6 +14,7 @@ router = APIRouter(
     prefix="/boardGames",
 )
 
+#search for a board game by name - if not found populates from BGG to our database
 @router.get("/search/{name}", response_model=list[BoardGame])
 def read_board_game_by_name(name : str,session: SessionDep):
     board_games = getBoardGameByName.get_board_game_by_name(name, session)
@@ -21,7 +22,7 @@ def read_board_game_by_name(name : str,session: SessionDep):
         raise HTTPException(status_code=404, detail="Board game not found")
     return board_games
 
-@router.get("/user/{user_id}", response_model=list[BoardGame])
+@router.get("/userFeed/{user_id}", response_model=list[BoardGame])
 def get_user_board_games_feed(user_id: int, session:SessionDep, lastSeenID : int = 0):
     #we want to return a feed of board games for the user
     #for now, just return all board games with id > lastSeenID ordered by id
@@ -29,19 +30,21 @@ def get_user_board_games_feed(user_id: int, session:SessionDep, lastSeenID : int
     board_games = session.exec(statement).all()
     return board_games
 
-@router.get("/user/{user_id}/rehydrate", response_model=list[BoardGame])
+@router.get("/userFeed/{user_id}/rehydrate", response_model=list[BoardGame])
 def rehydrate_user_board_games(user_id: int, session:SessionDep, board_game_ids: list[int] = Query(...)):
     statement = select(BoardGame).where(BoardGame.id.in_(board_game_ids)).order_by(BoardGame.id)
     board_games = session.exec(statement).all()
     return board_games
 
 
+#Deprecated
 @router.get("/feed", response_model=list[BoardGame])
 def get_board_games(session:SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 100):
     board_games = select(BoardGame).offset(offset).limit(limit)
     boardGames = session.exec(board_games).all()
     return boardGames
 
+#get indidual board game by id
 @router.get("/boardGame/{board_game_id}", response_model=BoardGame)
 def get_board_game_by_id(board_game_id: int, session:SessionDep):
     statemenet = select(BoardGame).where(BoardGame.id == board_game_id)
@@ -50,6 +53,7 @@ def get_board_game_by_id(board_game_id: int, session:SessionDep):
         raise HTTPException(status_code=404, detail="Board game not found")
     return board_game
 
+#get designers
 @router.get("/designers/{board_game_id}", response_model=list[BoardGameDesigner])
 def get_board_game_designers(board_game_id: int, session:SessionDep):
     statement = (

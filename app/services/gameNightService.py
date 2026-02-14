@@ -24,8 +24,6 @@ def get_game_night_feed(user_id: int, offset: int, session: SessionDep) -> GameN
     )
 
     nights = session.exec(stmt).unique().all()
-    print(nights[0].sessions[0].images)  # Debug print to verify sessions and images are loaded
-
     return nights[0]
 
 
