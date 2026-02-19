@@ -1,5 +1,7 @@
 from typing import List, Optional, TYPE_CHECKING
+from pydantic import BaseModel
 from sqlmodel import Date, Field, Relationship, SQLModel
+from datetime import date
 
 if TYPE_CHECKING:
     # This only runs during static analysis (IDE/Mypy), not at runtime
@@ -14,7 +16,7 @@ class GameSession(SQLModel, table=True):
     board_game_id: int = Field(foreign_key="boardgame.id", index=True)
     duration_minutes: int | None = Field(default=None)
     winner_user_id: int | None = Field(default=None, foreign_key="userboardgame.id", index=True)
-    date: Optional[Date] = None
+    date: date | None = Field(default=None)
 
 
     game_night : "GameNight" = Relationship(back_populates="sessions")
