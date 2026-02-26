@@ -12,7 +12,7 @@ class GameNight(SQLModel, table=True):
 
     host_user_id: int = Field(foreign_key="userboardgame.id", index=True)
 
-    date: date | None = Field(default=None)
+    game_night_date: date | None = Field(default=None)
     description: Optional[str] = Field(default=None)
 
     # IMPORTANT: default_factory=list
@@ -39,7 +39,7 @@ class GameSessionHelper(SQLModel):
 
 class GameNightPublic(SQLModel):
     host_user_id: int
-    date: Optional[date] = None
+    game_night_date: Optional[date] = None
     description: Optional[str] = None
     sessions: List[GameSessionHelper] = []
     images: List[str] = []

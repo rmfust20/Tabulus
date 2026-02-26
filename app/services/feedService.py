@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from requests import session
 from app.connection import SessionDep
 from app.models import Review, BoardGameDesigner, BoardGameDesignerLink, BoardGame, BoardGameFeedItem
@@ -8,7 +9,8 @@ def get_board_game_feed_item(offset: int, limit: int, session: SessionDep) -> li
     #So I need to join the BoardGame table with the Review table to get the average rating, number of ratings, number of reviews
     #And i need to join with the BoardGameDesigner and BoardGameDesignerLink tables to get the designers
 
-
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    
     review_stats_sq = (
         select(
             Review.board_game_id.label("bg_id"),

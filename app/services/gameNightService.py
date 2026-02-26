@@ -18,7 +18,7 @@ def get_game_night_feed(user_id: int, offset: int, session: SessionDep) -> GameN
             selectinload(GameNight.images),                         # night.images
             selectinload(GameNight.sessions).selectinload(GameSession.images),  # night.sessions + session.images
         )
-        .order_by(GameNight.date.desc())
+        .order_by(GameNight.game_night_date.desc())
         .offset(offset)
         .limit(25)
     )
@@ -32,7 +32,7 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
     print("got here")
     game_night_db = GameNight(
         host_user_id=payload.host_user_id,
-        date=func.now(),
+        game_night_date=func.now(),
         description=payload.description
     )
     session.add(game_night_db)
@@ -51,7 +51,7 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
             board_game_id=s.board_game_id,
             duration_minutes=s.duration_minutes,
             winner_user_id=s.winner_user_id,
-            date = func.now()
+            session_date = func.now()
         )
         session.add(game_session_db)
         session.flush()  # assigns game_session_db.id (needed for session images)
