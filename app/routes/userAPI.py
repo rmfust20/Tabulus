@@ -1,13 +1,15 @@
-from app.models import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate, LoginRequest
+from requests import session
+
+from app.models import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate, LoginRequest, UserFriendLink, UserBoardGameClientFacing
 from fastapi import APIRouter
 from app.connection import SessionDep
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Session, SQLModel, create_engine, insert, select
 from app.connection import SessionDep
 from typing import Annotated
 from app.models.user import UserBoardGameBase
 from app.services.tokenService import create_access_token
-from app.services.userService import hash_password, verify_password
+from app.services.userService import get_current_user, hash_password, verify_password
 from app.services.tokenService import new_refresh_token, hash_refresh_token
 from app.models.refreshToken import RefreshToken
 from datetime import datetime, timezone, timedelta
@@ -90,3 +92,24 @@ def logout(refresh_token: str, session: SessionDep):
         session.commit()
     return {"ok": True}
 
+@router.post("/addFriend/{user_id}/{friend_id}")
+def add_friend(user_id: int, friend_id: int, session: SessionDep):
+    if user_id != user_id:
+        raise HTTPException(403, "Cannot add friend for another user")
+    
+    statement = insert(UserFriendLink).values(user_id=user_id, friend_user_id=friend_id)
+    session.exec(statement)
+    session.commit()
+    return {"message": "Friend added successfully"}
+
+    # Implement the logic to add a friend here
+
+@router.get("/friends/{user_id}", response_model=list[UserBoardGameClientFacing])
+def get_friends(user_id: int, session: SessionDep): 
+    statement = (
+        select(UserBoardGame)
+        .join(UserFriendLink, UserBoardGame.id == UserFriendLink.friend_user_id)
+        .where(UserFriendLink.user_id == user_id)
+    )
+    friends = session.exec(statement).all()
+    return [{"id": friend.id, "username": friend.username} for friend in friends]

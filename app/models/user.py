@@ -17,3 +17,7 @@ class UserBoardGameCreate(UserBoardGameBase):
 class UserBoardGameUpdate(UserBoardGameBase):
     password: str | None = None
 
+class UserBoardGameClientFacing(SQLModel):
+    id: int
+    username: str
+

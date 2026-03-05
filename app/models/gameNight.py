@@ -33,9 +33,11 @@ class GameNightImage(SQLModel, table=True):
 class GameSessionHelper(SQLModel):
     board_game_id: int
     duration_minutes: int | None = None
-    winner_user_id: int | None = None
-    images: list[str] | None = None
-    users: list[int] | None = None
+    winners_user_id: list[int | None] = []
+
+
+
+    
 
 class GameNightPublic(SQLModel):
     host_user_id: int

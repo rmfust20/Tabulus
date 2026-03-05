@@ -8,7 +8,7 @@ from .boardGamePublisherLink import BoardGamePublisherLink
 from .boardGameDesigner import BoardGameDesigner
 from .boardGameDesignerLink import BoardGameDesignerLink
 from .review import Review, ReviewUpdate
-from .user import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate
+from .user import UserBoardGame, UserBoardGameCreate, UserBoardGamePublic, UserBoardGameUpdate, UserBoardGameClientFacing
 from .loginRequest import LoginRequest
 from .gameNight import GameNight
 from .gameSession import GameSession

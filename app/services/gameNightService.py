@@ -6,7 +6,7 @@ from app.models import Review, BoardGameDesigner, BoardGameDesignerLink, BoardGa
 from sqlmodel import Session, select, func, join, case
 from app.models.gameNight import GameNight, GameNightPublic, GameNightImage
 from app.models.gameNightUserLink import GameNightUserLink
-from app.models.gameSession import GameSession, GameSessionImage
+from app.models.gameSession import GameSession
 from app.models.gameSessionUserLink import GameSessionUserLink
 
 def get_game_night_feed(user_id: int, offset: int, session: SessionDep) -> GameNight:
@@ -29,7 +29,6 @@ def get_game_night_feed(user_id: int, offset: int, session: SessionDep) -> GameN
 
 def add_game_night(payload: GameNightPublic, session: SessionDep):
     # 1) Create the night
-    print("got here")
     game_night_db = GameNight(
         host_user_id=payload.host_user_id,
         game_night_date=func.now(),
@@ -50,19 +49,14 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
             game_night_id=game_night_db.id,
             board_game_id=s.board_game_id,
             duration_minutes=s.duration_minutes,
-            winner_user_id=s.winner_user_id,
             session_date = func.now()
         )
         session.add(game_session_db)
         session.flush()  # assigns game_session_db.id (needed for session images)
+        for winner_id in s.winners_user_id:
+            session.add(GameSessionUserLink(game_session_id=game_session_db.id, winner_user_id=winner_id))
 
-        # If your session DTO includes images:
-        for url in s.images:
-            session.add(GameSessionImage(game_session_id=game_session_db.id, image_url=url))
-
-        for user in s.users:
-            session.add(GameSessionUserLink(game_session_id=game_session_db.id, user_id=user))
-
+        # If your session DTO includes image
     session.commit()
     session.refresh(game_night_db)
     return game_night_db
