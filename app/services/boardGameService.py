@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from requests import session
 from app.connection import SessionDep
 from app.models import BoardGame, GameNight, GameSession, UserFriendLink, UserBoardGame
+from app.models.gameSessionUserLink import GameSessionUserLink
 from sqlmodel import Session, select, func, join, case
 
 def get_general_trending_feed(session: SessionDep, offset: int = 0) -> list[BoardGame]:
@@ -28,9 +29,12 @@ def get_trending_with_friends_feed(user_id: int, session: SessionDep, offset: in
         select(GameSession.board_game_id, func.count(GameSession.board_game_id).label("count"))
         .where(
             GameSession.session_date >= cutoff,
-            GameSession.winner_user_id.in_(
-                select(UserFriendLink.friend_user_id)
-                .where(UserFriendLink.user_id == user_id)
+                GameSession.id.in_(
+                select(GameSessionUserLink.game_session_id)
+                .where(GameSessionUserLink.winner_user_id.in_(
+                    select(UserFriendLink.friend_user_id)
+                    .where(UserFriendLink.user_id == user_id)
+                ))
             )  # Only consider sessions where a friend won
         )
         .group_by(GameSession.board_game_id)

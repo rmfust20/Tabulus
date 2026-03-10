@@ -91,8 +91,8 @@ def add_game_night(payload: GameNightPublic, session: SessionDep):
     # 2) Night images
     for url in payload.images:
         session.add(GameNightImage(game_night_id=game_night_db.id, image_url=url))
-    for users in payload.user_ids:
-        session.add(GameNightUserLink(game_night_id=game_night_db.id, user_id=users))
+    for user in payload.users:
+        session.add(GameNightUserLink(game_night_id=game_night_db.id, user_id=user.id))
 
     # 3) Sessions + their images
     for s in payload.sessions:
