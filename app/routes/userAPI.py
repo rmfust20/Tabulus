@@ -9,9 +9,8 @@ from app.connection import SessionDep
 from typing import Annotated
 from app.models.boardGame import BoardGame
 from app.models.user import UserBoardGameBase
-from app.services import boardGameService
 from app.services.tokenService import create_access_token
-from app.services.userService import get_current_user, hash_password, verify_password
+from app.services.userService import get_current_user, get_user_board_games, hash_password, verify_password
 from app.services.tokenService import new_refresh_token, hash_refresh_token
 from app.models.refreshToken import RefreshToken
 from datetime import datetime, timezone, timedelta
@@ -117,7 +116,7 @@ def get_friends(user_id: int, session: SessionDep):
     return [{"id": friend.id, "username": friend.username} for friend in friends]
 
 @router.get("/userBoardGames/{user_id}", response_model=list[BoardGame])
-def get_user_board_games(user_id: int, session: SessionDep):
-    return boardGameService.get_user_board_games(user_id, session)
+def get_user_board_games_route(user_id: int, session: SessionDep):
+    return get_user_board_games(user_id, session)
     
 

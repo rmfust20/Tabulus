@@ -41,7 +41,7 @@ def get_current_user(
         raise HTTPException(401, "User not found")
     return user
 
-def get_user_board_games(user_id: int, db: SessionDep):
+def get_user_board_games(user_id: int, db: SessionDep) -> list[BoardGame]:
     reviewed = (
         select(BoardGame)
         .join(Review, BoardGame.id == Review.board_game_id)
