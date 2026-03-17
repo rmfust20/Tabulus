@@ -24,7 +24,9 @@ class UserBoardGamePublic(UserBoardGameBase):
 class UserBoardGameCreate(UserBoardGameBase):
     password : str
 
-class UserBoardGameUpdate(UserBoardGameBase):
+class UserBoardGameUpdate(SQLModel):
+    username: str | None = None
+    email: str | None = None
     password: str | None = None
     profile_image_url: str | None = None
 
